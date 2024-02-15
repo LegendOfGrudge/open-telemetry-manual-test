@@ -1,10 +1,13 @@
 /*dice.js*/
-const { trace } = require('@opentelemetry/api');
+const { trace, metrics } = require('@opentelemetry/api');
 
 const tracer = trace.getTracer('dice-lib');
+const meter = metrics.getMeter('dice-lib');
+const counter = meter.createCounter('dice-lib.rolls.counter');
 
 function rollOnce(i, min, max) {
   return tracer.startActiveSpan(`rollOnce:${i}`, (span) => {
+    counter.add(1);
     const result = Math.floor(Math.random() * (max - min) + min);
     span.end();
     return result;
