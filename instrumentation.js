@@ -5,6 +5,7 @@ const {
   PeriodicExportingMetricReader,
   ConsoleMetricExporter,
 } = require('@opentelemetry/sdk-metrics');
+const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
 const { Resource } = require('@opentelemetry/resources');
 const {
   SemanticResourceAttributes,
@@ -16,9 +17,7 @@ const sdk = new NodeSDK({
     [SemanticResourceAttributes.SERVICE_VERSION]: '0.1.0',
   }),
   traceExporter: new ConsoleSpanExporter(),
-  metricReader: new PeriodicExportingMetricReader({
-    exporter: new ConsoleMetricExporter(),
-  }),
+  metricReader: new PrometheusExporter()
 });
 
 sdk.start();

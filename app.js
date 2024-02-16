@@ -1,5 +1,5 @@
 /*app.js*/
-const { trace, metrics } = require('@opentelemetry/api');
+const { trace, metrics, ValueType } = require('@opentelemetry/api');
 const express = require('express');
 const { rollTheDice } = require('./dice.js');
 
@@ -10,7 +10,14 @@ const PORT = parseInt(process.env.PORT || '8080');
 const app = express();
 
 app.get('/rolldice', (req, res) => {
-  const histogram = meter.createHistogram('task.duration');
+  const histogram = meter.createHistogram(
+    'http.server.duration',
+    {
+      description: 'A distribution of the HTTP server response times',
+      unit: 'milliseconds',
+      valueType: 1,
+    },
+  );
   const startTime = new Date().getTime();
 
   const rolls = req.query.rolls ? parseInt(req.query.rolls.toString()) : NaN;
@@ -25,7 +32,7 @@ app.get('/rolldice', (req, res) => {
   const endTime = new Date().getTime();
   const executionTime = endTime - startTime;
 
-  histogram.record(executionTime);
+  histogram.record(parseInt(executionTime));
 });
 
 app.listen(PORT, () => {
